@@ -29,6 +29,7 @@ def call(Map parameters = [:], body) {
                                     command: '/bin/sh -c',
                                     args: 'cat',
                                     ttyEnabled: true,
+                                    activeDeadlineSeconds: 240,
                                     workingDir: '/home/jenkins/',
                                     envVars: [
                                             envVar(key: 'TERM', value: 'dumb'),
