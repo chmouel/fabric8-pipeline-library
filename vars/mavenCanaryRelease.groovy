@@ -60,6 +60,7 @@ def call(body) {
     echo "s2i mode: ${s2iMode}"
 
     if (!s2iMode) {
+        echo "BLAHBLAH"
         def registry = utils.getDockerRegistry()
         def m = readMavenPom file: 'pom.xml'
         def groupId = m.groupId.split('\\.')
