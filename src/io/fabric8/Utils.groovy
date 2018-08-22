@@ -182,18 +182,21 @@ String getDockerRegistry() {
 
 @NonCPS
 String getUsersPipelineConfig(k) {
-
-    // first lets check if we have the new pipeliens configmap in the users home namespace
-    KubernetesClient client = new DefaultKubernetesClient()
+  openshift.withCluster() {
     def ns = getUsersNamespace()
-    def r = client.configMaps().inNamespace(ns).withName('fabric8-pipelines').get()
-    if (!r) {
+    openshift.withProject(ns) {
+      def r = openshift.selector('configmap/fabric8-pipelines')
+      if (!r) {
         error "no fabric8-pipelines configmap found in namespace ${ns}"
+      }
+
+      def o = r.object();
+      def d = o.data;
+      echo "looking for key ${k} in ${ns}/fabric8-pipelines configmap";
+      def v = d[k];
+      return v;
     }
-    def d = r.getData()
-    echo "looking for key ${k} in ${ns}/fabric8-pipelines configmap"
-    def v = d[k]
-    return v
+  }
 }
 
 // returns a map of the configmap data in a given namepspace
@@ -228,8 +231,9 @@ private Map<String, String> parseConfigMapData(final String input) {
 
 @NonCPS
 String getNamespace() {
-    KubernetesClient client = new DefaultKubernetesClient()
-    return client.getNamespace()
+    openshift.withCluster() {
+      return openshift.project();
+    }
 }
 
 @NonCPS
